@@ -40,36 +40,42 @@ function findText(node, text) {
 function TextIFrame({ src, scroll, text }) {
   const ref = useRef(null);
   const [isFrameLoaded, setIsFrameLoaded] = useState(false);
-  const [isFrameRendered, setIsFrameRendered] = useState(false);
 
 
-  // useEffect(() => {
-  //   ref.current.onload = () => setIsFrameLoaded(true);
-  //   // ref.current.addEventListener('afterLayout', () => setIsFrameLoaded(true));
-  //   // return () => {
-  //   //   ref.current.addEventListener('afterLayout', () => setIsFrameLoaded(true));
-  //   // }
-  // }, []);
+  // Note: `onload` listeners don't work here because they happen after request succeeds,
+  // not when the document renders, so we don't really get a body to render 
 
-  // useEffect(() => {
-  //   if (isFrameLoaded) {
+  // instead we have to poll lol
+  useEffect(() => {
+    function checkIframeLoaded() {
+        console.log('checking frame loaded')
+        let iframeContent = ref?.current?.contentDocument;
+        console.log(ref.current.contentDocument);
 
-  //     const idoc = ref.current.contentWindow || ref.current.contentDocument;
-  //     if (idoc.document) {
-  //       console.log("theres a doc!");
-  //     }
-  //   }
+        if (iframeContent) {
+            clearInterval(checkIframeLoadedInterval);
 
-  // }, [isFrameLoaded]);
+            console.log('iframe loaded!', iframeContent);
+            setIsFrameLoaded(true);
+            // setTimeout(function () {
+            // }, 100); //100 ms of grace time
+        }
+    }
+
+    let checkIframeLoadedInterval = setInterval( checkIframeLoaded, 250 );
+
+    return () => clearInterval(checkIframeLoadedInterval);
+
+  }, [ref.current]);
 
 
   useEffect(() => {
     console.log('is iframe loaded', isFrameLoaded);
-    if (ref?.current?.contentDocument) {
-      console.log('looking for text:', findText(ref.current.contentDocument.document, text));
+    if (isFrameLoaded) {
+      console.log(ref.current);
+      console.log('looking for text:', findText(ref.current.contentDocument, text));
     }
-  }, [isFrameLoaded, ref?.current?.contentDocument?.document, text]);
-
+  }, [isFrameLoaded, text]);
 
   return (
     <div
@@ -82,6 +88,8 @@ function TextIFrame({ src, scroll, text }) {
     >
     <iframe 
       ref={ref}
+      // onload={() => setIsFrameLoaded(true)}
+      // onreadystatechange={(self) => { console.log(self.readyState) }}
       style={{
         width: '2000px',
         height: '2000px',
