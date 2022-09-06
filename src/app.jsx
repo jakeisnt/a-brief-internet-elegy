@@ -1,5 +1,3 @@
-import { useState, useEffect, useRef } from 'preact/hooks'
-import preactLogo from './assets/preact.svg'
 import './app.css'
 
 
@@ -124,8 +122,6 @@ function ElegyContainer () {
 
 
 export function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center' }}>
     <ElegyContainer />
