@@ -2,20 +2,23 @@ import { useState, useEffect, useRef } from 'preact/hooks'
 import preactLogo from './assets/preact.svg'
 import './app.css'
 
-function onIFrameLoad(iframeRef) {
-  const [isIFrameLoaded, setIsIFrameLoaded] = useState(false);
+// function useIsIFrameLoaded(iframeRef) {
+//   const [isIFrameLoaded, setIsIFrameLoaded] = useState(false);
+//   const iframeCurrent = iframeRef.current;
 
-  const iframeCurrent = iframeRef.current;
-  console.log(iframeCurrent);
+//   useEffect(() => {
+//     iframeCurrent?.addEventListener('load', () => setIsIFrameLoaded(true));
+//     if (iframeCurrent?.contentDocument?.childNodes) {
+//       setIsIFrameLoaded(true);
+//     }
 
-  useEffect(() => {
-    iframeCurrent?.addEventListener('load', () => setIsIFrameLoaded(true));
+//     return () => {
+//       iframeCurrent?.removeEventListener('load', () => setIsIFrameLoaded(true));
+//     };
+//   }, [iframeCurrent]);
 
-    return () => {
-      iframeCurrent?.removeEventListener('load', () => setIsIFrameLoaded(true));
-    };
-  }, [iframeCurrent]);
-}
+//   return isIFrameLoaded;
+// }
 
 
 function findText(node, text) {
@@ -35,16 +38,38 @@ function findText(node, text) {
 
 
 function TextIFrame({ src, scroll, text }) {
-  const frame = useRef(null);
-  const isIFrameLoaded = onIFrameLoad(frame);
+  const ref = useRef(null);
+  const [isFrameLoaded, setIsFrameLoaded] = useState(false);
+  const [isFrameRendered, setIsFrameRendered] = useState(false);
 
-  console.log(frame);
+
+  // useEffect(() => {
+  //   ref.current.onload = () => setIsFrameLoaded(true);
+  //   // ref.current.addEventListener('afterLayout', () => setIsFrameLoaded(true));
+  //   // return () => {
+  //   //   ref.current.addEventListener('afterLayout', () => setIsFrameLoaded(true));
+  //   // }
+  // }, []);
+
+  // useEffect(() => {
+  //   if (isFrameLoaded) {
+
+  //     const idoc = ref.current.contentWindow || ref.current.contentDocument;
+  //     if (idoc.document) {
+  //       console.log("theres a doc!");
+  //     }
+  //   }
+
+  // }, [isFrameLoaded]);
+
 
   useEffect(() => {
-    if (isIFrameLoaded) {
-      console.log('looking for text:', findText(frame.current.contentDocument, text));
+    console.log('is iframe loaded', isFrameLoaded);
+    if (ref?.current?.contentDocument) {
+      console.log('looking for text:', findText(ref.current.contentDocument.document, text));
     }
-  }, [isIFrameLoaded]);
+  }, [isFrameLoaded, ref?.current?.contentDocument?.document, text]);
+
 
   return (
     <div
@@ -56,7 +81,7 @@ function TextIFrame({ src, scroll, text }) {
       }}
     >
     <iframe 
-      ref={frame}
+      ref={ref}
       style={{
         width: '2000px',
         height: '2000px',
