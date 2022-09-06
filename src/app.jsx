@@ -2,21 +2,6 @@ import { useState, useEffect, useRef } from 'preact/hooks'
 import preactLogo from './assets/preact.svg'
 import './app.css'
 
-function findText(node, text) {
-  console.log('node and children', node, node.childNodes);
-  if(node.childNodes.length === 0) {//leaf node
-    return node.textContent.indexOf(text) === -1 ? [] : [node];
-  }
-
-  let matchingNodes = new Array();
-
-  node.childNodes.forEach(child => {
-    matchingNodes.concat(findText(child, text));
-  });
-
-  return matchingNodes;
-}
-
 
 function TextIFrame({ src, scroll, width, height='5em', transform, scale=2 }) {
   return (
@@ -26,6 +11,7 @@ function TextIFrame({ src, scroll, width, height='5em', transform, scale=2 }) {
         height,
         padding: 0,
         overflow: scroll ? 'scroll' : 'hidden',
+        scroll: 'none',
         border: '1px solid black'
       }}
     >
@@ -44,7 +30,7 @@ function TextIFrame({ src, scroll, width, height='5em', transform, scale=2 }) {
 }
 
 
-const Each = <TextIFrame 
+const Every = <TextIFrame 
         src="https://bleacherreport.com/articles/10047694-grading-every-drafted-2022-rookie-qbs-preseason-performance"
         transform='1730px 1050px'
         width='16em'
@@ -109,17 +95,6 @@ const period = <TextIFrame
       />;
 
 
-
-const Not_Exist = 
-      <TextIFrame 
-        src="https://vladmihalcea.com/sql-exists/"
-        transform='9px 1251px'
-        width='34em'
-        height='8em'
-        scale={2}
-      />;
-
-
 const This_website = 
       <TextIFrame 
         src="https://support.microsoft.com/en-us/microsoft-edge/this-website-works-better-in-microsoft-edge-160fa918-d581-4932-9e4e-1075c4713595"
@@ -133,9 +108,9 @@ const This_website =
 function ElegyContainer () {
   return (
     <div
-      style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' }}
+      style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' , justifyContent: 'space-around' }}
     >
-      {Each}
+      {Every}
       {word}
       {_in}
       {_this}
@@ -144,9 +119,6 @@ function ElegyContainer () {
       {disappear}
       {period}
     </div>
-
-      // {This_website}
-
   )
 }
 
@@ -155,6 +127,11 @@ export function App() {
   const [count, setCount] = useState(0)
 
   return (
+    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center' }}>
     <ElegyContainer />
+      <p style={{ maxWidth: '22em', paddingTop: '2em', fontFamily: 'Roboto Mono' }}>
+        The average lifespan of a URL is two years. Each word on this website is displayed live from a distinct webpage. As the internet decays, this page will follow.
+      </p>
+    </div>
   )
 }
